@@ -1,28 +1,28 @@
 <template>
-  <div id="app">
-    <navigation />
-    <router-view/>
-    <div id="footer" class="container">
-      Footer
-    </div>
+  <div class="app">
+    <v-app >
+      <navigation/>
+        <v-content class="grey lighten-4" >
+           <router-view/>
+        </v-content>
+  </v-app>
   </div>
 </template>
 
 <script>
-  import Navigation from "./components/Navigation.vue";
-
+import Navigation from './components/Navigation'
+import axios from 'axios';
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    Navigation
+    Navigation,
   },
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js App'
+  data (){
+    return{
     }
   },
-  created(){
-    var token = localStorage.getItem("token");
+  created() {
+    const token = localStorage.getItem("token");
     if (token){
       axios.defaults.headers.common['Authorization'] = "Token " + token;
       this.$router.push({name: "Home"});
@@ -31,21 +31,5 @@ export default {
       this.$router.push({name: "Login"});
     }
   }
-}
+};
 </script>
-
-<style scoped lang="scss">
-  #app{
-    padding-top: 70px;
-    padding-bottom: 20px;
-  }
-  #footer{
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-</style>

@@ -17,7 +17,10 @@ from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path
 from django.urls import include, re_path
-from django.views.generic import  TemplateView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
+from django.conf import  settings
+from django.views.generic import TemplateView
 import users
 
 urlpatterns = [
@@ -29,5 +32,7 @@ urlpatterns = [
     path('finance/', include('finance.urls')),
     path('api-token-auth/', users.views.CustomAuthToken.as_view()),
     re_path(r'^', include('notifications.urls')),
-    re_path(r'^', include('todos.urls'))
+    re_path(r'^', include('todos.urls')),
+    re_path(r'^', include('timetable.urls'))
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

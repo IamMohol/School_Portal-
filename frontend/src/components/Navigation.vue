@@ -1,78 +1,142 @@
 <template>
-    <div id="Navigation">
-      <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-default bg-dark">
-        <div class="container">
-                <a class="navbar-brand" href="/">
-                    <img class="img-fluid" src="/static/dist/assets/img/logo.png" alt="School Portal">
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                       <li class="nav-item">
-                         <router-link class="nav-link" :to="{name: 'Home'}">
-                              Home
-                            </router-link>
-                       </li>
-                      <li class="nav-item">
-                         <router-link class="nav-link" :to="{name: 'Academics'}">
-                              Academics
-                            </router-link>
-                       </li>
-                      <li class="nav-item">
-                         <router-link class="nav-link" :to="{name: 'Finance'}">
-                              Finances
-                            </router-link>
-                       </li>
-                    </ul>
-                    <ul class="navbar-nav my-2 my-lg-0">
+    <div>
+        <template v-if="loggedIn">
+            <v-navigation-drawer
+                    v-model="drawer"
+                    expand-on-hover
+                    app
+                    color="#080708"
+                    dark>
+                <v-list dense nav class="py-0" v-for="i in profileInfo">
+                    <v-list-item two-line>
+                        <v-list-item-avatar>
+                            <v-img :src="i.avatar"></v-img>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title>{{i.first_name}} <span>{{i.l_name}}</span></v-list-item-title>
+                            <v-list-item-subtitle>{{i.registration_number}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider/>
 
-                        <li class="nav-item">
-                          <template v-if="loggedIn">
-                            <a id='logout' class="nav-link" @click="logout">Logout</a>
-                          </template>
-                          <template v-else>
-                            <router-link class="nav-link" :to="{name: 'Login'}">
-                              Login
-                            </router-link>
-                          </template>
-                        </li>
-                    </ul>
-                </div>
-        </div>
-      </nav>
+                    <v-list-item link :to="{path:'/'}">
+                        <v-list-item-icon>
+                            <v-icon>dashboard</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-content>Home</v-list-item-content>
+                        </v-list-item-content>
+                    </v-list-item>
+
+<!--                    <v-list-item link :to="{path:'/Academics'}">-->
+<!--                        <v-list-item-icon>-->
+<!--                            <v-icon>school</v-icon>-->
+<!--                        </v-list-item-icon>-->
+<!--                        <v-list-item-content>-->
+<!--                            <v-list-item-content>Academics</v-list-item-content>-->
+<!--                        </v-list-item-content>-->
+<!--                    </v-list-item>-->
+                    <v-list-item link :to="{path:'/Units'}">
+                        <v-list-item-icon>
+                            <v-icon>event_note</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-content>Courses</v-list-item-content>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item link :to="{path:'/Grades'}">
+                        <v-list-item-icon>
+                            <v-icon>poll</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-content>Grades</v-list-item-content>
+                        </v-list-item-content>
+                    </v-list-item>
+
+                    <v-list-item link :to="{path:'/Finance'}">
+                        <v-list-item-icon>
+                            <v-icon>account_balance</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-content>Finance</v-list-item-content>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item link :to="{path:'/Timetable2'}">
+                        <v-list-item-icon>
+                            <v-icon>calendar_today</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-content>Timetable</v-list-item-content>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-navigation-drawer>
+        </template>
+
+        <v-app-bar
+                color="#3b60e4"
+                dense
+                dark
+                app
+                clipped-right
+        >
+            <template v-if="loggedIn">
+                <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+            </template>
+
+
+            <v-toolbar-title>School Portal</v-toolbar-title>
+
+            <v-spacer></v-spacer>
+            <template v-if="loggedIn">
+                <v-btn icon @click="logout">
+                    <v-icon>exit_to_app</v-icon>
+                </v-btn>
+            </template>
+        </v-app-bar>
     </div>
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         name: "Navigation",
-        data(){
+        data() {
             return {
-              loggedIn: 0
+                loggedIn: 0,
+                drawer: true,
+                profileInfo: null
             }
         },
+        methods: {
+            logout() {
+                localStorage.removeItem("token");
+                this.loggedIn = 0;
+                window.location.href = "/";
+            },
 
-        methods:{
-          logout(){
-            localStorage.removeItem("token");
-            this.loggedIn = 0;
-            window.location.href = "/";
-          }
+            getProfile() {
+                var p = this;
+                axios
+                    .get('/students/profile/')
+                    .then(response => (
+                        p.profileInfo = response.data))
+                    .catch(error => console.log(error))
+            },
         },
-        created(){
-          var token = localStorage.getItem('token');
-          if (token) {
-           this.loggedIn = 1;
-          }
+        created() {
+            var token = localStorage.getItem('token');
+            if (token) {
+                this.loggedIn = 1;
+            }
+            this.getProfile();
         }
     }
 </script>
 
 <style scoped>
-  #logout{
-    cursor: pointer;
-  }
-
-</style>
+    #logout {
+        cursor: pointer;
+    }
+</style>yle>

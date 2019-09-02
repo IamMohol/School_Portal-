@@ -39,8 +39,16 @@ class UnitSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LecturerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Lecturer
+        fields = '__all__'
+
+
 class UnitDetailSerializer(serializers.ModelSerializer):
     unit = UnitSerializer(read_only=True)
+    lecturer = LecturerSerializer(read_only=True)
 
     class Meta:
         model = models.UnitDetail
@@ -52,6 +60,14 @@ class UnitsRegisteredSerializer(serializers.ModelSerializer):
 
     class Meta: 
         model = models.UnitRegistration
+        fields = '__all__'
+
+
+class CourseOutlineSerializer(serializers.ModelSerializer):
+    unit = UnitsRegisteredSerializer(read_only=True)
+
+    class Meta:
+        model = models.CourseOutline
         fields = '__all__'
 
 
@@ -71,4 +87,14 @@ class GradesSerializer(serializers.ModelSerializer):
         model = models.Grade
         fields = '__all__'
 
+
+class MyPlateSerializer(serializers.ModelSerializer):
+    unit = UnitSerializer(read_only=True)
+    lec = LecturerSerializer(read_only=True)
+    due_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M", required=False, read_only=True)
+    clss = ClassSerializer(read_only=True)
+
+    class Meta:
+        model = models.MyPlate
+        fields = '__all__'
 

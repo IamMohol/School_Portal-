@@ -81,6 +81,7 @@ class Unit(models.Model):
     def __str__(self):
         return self.name
 
+
 class CourseUnit(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     clss = models.ForeignKey(Class, on_delete=models.CASCADE)
@@ -89,23 +90,39 @@ class CourseUnit(models.Model):
         return "%s - %s" % (self.clss, self.unit)
 
 
+class Lecturer(models.Model):
+    title = models.CharField(max_length=20, blank=True, null=True)
+    f_name = models.CharField(max_length=50)
+    l_name = models.CharField(max_length=50)
+    email = models.CharField(max_length=120)
+    phone = models.CharField(max_length=100)
+    bio = models.TextField(blank=True)
+    avatar = models.ImageField(blank=True)
+
+    def __str__(self):
+        return "{} {}".format(
+            self.f_name,
+            self.l_name
+        )
+
+
 class UnitDetail(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     description = models.TextField()
     course_outline = models.TextField()
-    resources = models.CharField(max_length=100)
+    resources = models.CharField(max_length=100, blank=True)
+    lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, blank=True, null=True)
+    thumbnail = models.ImageField(default='default.png', blank=True)
+    difficulty = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return self.unit.name
-
-    def get_absolute_url(self):
-        pass
 
 
 class Grade(models.Model):
     midterm_mark = models.FloatField()
     final_mark = models.FloatField()
-    grade = models.IntegerField(choices=GRADES, default=None)
+    grade = models.CharField(default=None, max_length=10)
     course_unit = models.ForeignKey(CourseUnit, on_delete=models.CASCADE)
     student = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -137,4 +154,31 @@ class UnitRegistration(models.Model):
         return '{}({})'.format(
             self.unit,
             self.student
+        )
+
+
+class CourseOutline(models.Model):
+    unit = models.ForeignKey(UnitRegistration, on_delete=models.CASCADE)
+    week = models.CharField(max_length=10)
+    content = models.CharField(max_length=500)
+
+    def __str__(self):
+        return "{} {}".format(
+            self.unit,
+            self.week
+        )
+
+
+class MyPlate(models.Model):
+    type = models.CharField(max_length=15)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    lec = models.ForeignKey(Lecturer, on_delete=models.CASCADE)
+    clss = models.ForeignKey(Class, on_delete=models.CASCADE)
+    due_date = models.DateTimeField()
+
+    def __str__(self):
+        return '{} {} {}'.format(
+            self.type,
+            self.unit.name,
+            self.due_date,
         )

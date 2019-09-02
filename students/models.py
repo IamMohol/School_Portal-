@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 from academics.models import Class, Course
 # Create your models here.
 
+
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     registration_number = models.CharField(max_length=20)
     class_enrolled = models.ForeignKey(Class, on_delete=models.CASCADE, null=True)
     course_enrolled = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    avatar = models.ImageField(blank=True)
+    avatar = models.ImageField(upload_to='profile_image', blank=True)
 
     class Meta:
         verbose_name = "Student Profile"
