@@ -10,7 +10,7 @@ django-extensions==2.1.9
 django-rest-auth==0.9.5
 django-rest-framework==0.1.0
 django-webpack-loader==0.6.0
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 greenlet==0.4.15
 idna==2.8
 ipython==7.5.0
